@@ -1,0 +1,28 @@
+# Core
+streamlit>=1.38
+chromadb>=0.5
+sentence-transformers>=3.0
+anthropic>=0.39
+pymupdf>=1.24
+python-docx>=1.1
+beautifulsoup4>=4.12
+lxml>=5.0
+pyyaml>=6.0
+python-dotenv>=1.0
+pydantic>=2.0
+
+# Optional LLM providers
+openai>=1.50
+
+# Utilities
+chardet>=5.0
+tqdm>=4.66
+
+# ML backend (sentence-transformers dependency)
+torch>=2.0
+
+# Dev
+pytest>=8.0
+pytest-asyncio>=0.24
+ruff>=0.7
+mypy>=1.11

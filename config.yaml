@@ -1,0 +1,33 @@
+app:
+  name: "Halachic Q&A"
+  version: "1.0.0"
+  language: "he"
+
+embedding:
+  model: "intfloat/multilingual-e5-large"
+  device: "auto"
+  batch_size: 32
+
+chunking:
+  target_tokens: 450
+  max_tokens: 800
+  min_tokens: 50
+  overlap_tokens: 50
+
+retrieval:
+  top_k: 5
+  initial_candidates: 20
+  min_similarity: 0.3
+  use_reranker: false
+
+generation:
+  provider: "anthropic"
+  model: "claude-sonnet-4-20250514"
+  max_tokens: 2000
+  temperature: 0.2
+
+storage:
+  chroma_dir: "./db/chroma"
+  sqlite_path: "./db/app.db"
+  books_dir: "./data/books"
+  processed_dir: "./data/processed"

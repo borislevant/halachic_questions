@@ -2,6 +2,7 @@
 
 from src.models.book import Book
 from src.models.chunk import Chunk
+from src.models.parsed import ParsedBook, Section
 from src.models.query_result import (
     Citation,
     GeneratedAnswer,
@@ -14,6 +15,8 @@ __all__ = [
     "Chunk",
     "Citation",
     "GeneratedAnswer",
+    "ParsedBook",
     "QueryResult",
     "RetrievalResult",
+    "Section",
 ]

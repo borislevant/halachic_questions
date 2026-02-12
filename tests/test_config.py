@@ -1,8 +1,6 @@
 """Tests for configuration loading."""
 
-import os
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 import yaml
 

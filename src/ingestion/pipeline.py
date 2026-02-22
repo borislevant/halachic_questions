@@ -1,6 +1,8 @@
 """End-to-end book ingestion pipeline."""
 
 import logging
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -12,24 +14,25 @@ from src.ingestion.parser import BookParser
 from src.models.book import Book
 from src.models.chunk import Chunk
 from src.retrieval.vector_store import VectorStore
+from src.storage import database
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
 class IngestionReport:
     """Report of an ingestion operation."""
 
-    def __init__(self) -> None:
-        self.success: bool = False
-        self.book_id: str = ""
-        self.book_title: str = ""
-        self.source_path: str = ""
-        self.chunks_created: int = 0
-        self.warnings: list[str] = []
-        self.errors: list[str] = []
-        self.processing_time_seconds: float = 0.0
+    success: bool = False
+    book_id: str = ""
+    book_title: str = ""
+    source_path: str = ""
+    chunks_created: int = 0
+    warnings: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
+    processing_time_seconds: float = 0.0
 
-    def __str__(self) -> str:
+    def format_report(self) -> str:
         """Format report as a readable string."""
         lines = [
             f"Ingestion Report: {self.book_title}",
@@ -88,6 +91,7 @@ class IngestionPipeline:
         self,
         file_path: str | Path,
         author: str = "",
+        book_id: str | None = None,
         show_progress: bool = True,
     ) -> IngestionReport:
         """Ingest a book file into the system.
@@ -95,6 +99,7 @@ class IngestionPipeline:
         Args:
             file_path: Path to the book file.
             author: Optional author name (if not detected from file).
+            book_id: Optional book ID (for re-indexing). If None, generates a new UUID.
             show_progress: Whether to show progress bars.
 
         Returns:
@@ -107,6 +112,11 @@ class IngestionPipeline:
 
         file_path = Path(file_path)
         report.source_path = str(file_path)
+
+        # Generate or use provided book_id
+        if book_id is None:
+            book_id = str(uuid4())
+        report.book_id = book_id
 
         try:
             # Step 1: Parse the book
@@ -124,8 +134,22 @@ class IngestionPipeline:
                 parsed_book.author = author
 
             report.book_title = parsed_book.title
-            book_id = str(uuid4())
-            report.book_id = book_id
+
+            # Create Book model for persistence
+            book = Book(
+                id=book_id,
+                title=parsed_book.title,
+                author=parsed_book.author,
+                language=parsed_book.language,
+                source_path=str(file_path.resolve()),
+                file_format=file_path.suffix.lstrip(".").lower(),
+                chunk_count=0,
+                ingested_at=datetime.now(),
+                status="ingesting",
+            )
+
+            # Write to DB with status='ingesting'
+            database.upsert_book(self._config.storage.sqlite_path, book)
 
             # Validate Hebrew content for Hebrew books
             if parsed_book.language == "he":
@@ -143,6 +167,8 @@ class IngestionPipeline:
                 report.errors.append("Chunking produced no chunks (text too short or empty)")
                 report.success = False
                 report.processing_time_seconds = time.time() - start_time
+                # Update status to error
+                database.update_book_status(self._config.storage.sqlite_path, book_id, "error")
                 return report
 
             report.chunks_created = len(chunks)
@@ -177,9 +203,11 @@ class IngestionPipeline:
                 show_progress=show_progress,
             )
 
-            # Step 5: Save book metadata
-            # TODO: This will be implemented when we add storage/history.py
-            # For now, we just log success
+            # Step 5: Save book metadata with final status
+            book.chunk_count = len(chunks)
+            book.status = "active"
+            database.upsert_book(self._config.storage.sqlite_path, book)
+
             logger.info(
                 "Successfully ingested book '%s' (%s) with %d chunks",
                 parsed_book.title,
@@ -195,6 +223,11 @@ class IngestionPipeline:
             report.errors.append(f"Ingestion failed: {str(e)}")
             report.success = False
             report.processing_time_seconds = time.time() - start_time
+            # Try to update status to error
+            try:
+                database.update_book_status(self._config.storage.sqlite_path, book_id, "error")
+            except Exception:
+                logger.exception("Failed to update book status to error")
 
         return report
 
@@ -213,9 +246,11 @@ class IngestionPipeline:
             # Delete from vector store
             deleted_count = self._vector_store.delete_by_book_id(book_id)
 
-            # TODO: Delete from SQLite metadata when storage/history.py is implemented
+            # Delete from SQLite metadata
+            db_deleted = database.delete_book(self._config.storage.sqlite_path, book_id)
 
-            logger.info("Removed book %s (%d chunks deleted)", book_id, deleted_count)
+            logger.info("Removed book %s (%d chunks deleted, DB row deleted: %s)", 
+                       book_id, deleted_count, db_deleted)
             return True
 
         except Exception:
@@ -231,7 +266,7 @@ class IngestionPipeline:
     ) -> IngestionReport:
         """Re-index an existing book.
 
-        Removes the old version and ingests the new one.
+        Removes the old version and ingests the new one with the same book_id.
 
         Args:
             file_path: Path to the book file.
@@ -247,10 +282,80 @@ class IngestionPipeline:
         # Remove old version
         self.remove_book(book_id)
 
-        # Ingest new version (but use the same book_id)
-        # Note: We'll need to modify ingest_book to accept an optional book_id
-        # For now, this creates a new book_id
-        return self.ingest_book(file_path, author=author, show_progress=show_progress)
+        # Ingest new version with the same book_id
+        return self.ingest_book(file_path, author=author, book_id=book_id, show_progress=show_progress)
+
+    def ingest_directory(
+        self,
+        dir_path: str | Path,
+        author: str = "",
+        recursive: bool = False,
+        show_progress: bool = True,
+    ) -> list[IngestionReport]:
+        """Ingest all supported book files from a directory.
+
+        Args:
+            dir_path: Path to the directory containing book files.
+            author: Optional author name for all books.
+            recursive: Whether to recursively scan subdirectories.
+            show_progress: Whether to show progress bars.
+
+        Returns:
+            List of IngestionReport for each file processed.
+        """
+        from src.ingestion.parser import SUPPORTED_FORMATS
+
+        dir_path = Path(dir_path)
+        if not dir_path.is_dir():
+            logger.error("Directory not found: %s", dir_path)
+            return []
+
+        # Collect all supported files
+        files = []
+        if recursive:
+            for ext in SUPPORTED_FORMATS.keys():
+                files.extend(dir_path.rglob(f"*{ext}"))
+        else:
+            for ext in SUPPORTED_FORMATS.keys():
+                files.extend(dir_path.glob(f"*{ext}"))
+
+        # Sort for deterministic order
+        files = sorted(files)
+
+        logger.info("Found %d supported files in %s (recursive=%s)", 
+                   len(files), dir_path, recursive)
+
+        reports = []
+        for file_path in files:
+            logger.info("Processing file: %s", file_path)
+            try:
+                report = self.ingest_book(
+                    file_path, author=author, show_progress=show_progress
+                )
+                reports.append(report)
+                if report.success:
+                    logger.info("Successfully ingested: %s", file_path.name)
+                else:
+                    logger.warning("Failed to ingest: %s", file_path.name)
+            except Exception as e:
+                logger.exception("Error processing file %s: %s", file_path, e)
+                # Create a failure report
+                failed_report = IngestionReport(
+                    success=False,
+                    book_title=file_path.name,
+                    source_path=str(file_path),
+                    errors=[f"Unexpected error: {str(e)}"],
+                )
+                reports.append(failed_report)
+
+        successful = sum(1 for r in reports if r.success)
+        logger.info(
+            "Directory ingestion complete: %d/%d files succeeded",
+            successful,
+            len(files),
+        )
+
+        return reports
 
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about the ingestion system.

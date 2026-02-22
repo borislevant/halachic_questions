@@ -1,7 +1,10 @@
 """SQLite database initialization and connection management."""
 
 import sqlite3
+from datetime import datetime
 from pathlib import Path
+
+from src.models.book import Book
 
 
 def get_connection(db_path: str | Path) -> sqlite3.Connection:
@@ -63,6 +66,141 @@ def initialize_database(db_path: str | Path) -> None:
             );
             """
         )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def upsert_book(db_path: str | Path, book: Book) -> None:
+    """Insert or update a book record.
+
+    Args:
+        db_path: Path to the SQLite database file.
+        book: Book instance to persist.
+    """
+    conn = get_connection(db_path)
+    try:
+        conn.execute(
+            """
+            INSERT INTO books (id, title, author, language, source_path, file_format, chunk_count, ingested_at, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                title = excluded.title,
+                author = excluded.author,
+                language = excluded.language,
+                source_path = excluded.source_path,
+                file_format = excluded.file_format,
+                chunk_count = excluded.chunk_count,
+                ingested_at = excluded.ingested_at,
+                status = excluded.status
+            """,
+            (
+                book.id,
+                book.title,
+                book.author,
+                book.language,
+                book.source_path,
+                book.file_format,
+                book.chunk_count,
+                book.ingested_at.isoformat(),
+                book.status,
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_book_by_id(db_path: str | Path, book_id: str) -> Book | None:
+    """Retrieve a book by its ID.
+
+    Args:
+        db_path: Path to the SQLite database file.
+        book_id: The book's UUID.
+
+    Returns:
+        Book instance if found, None otherwise.
+    """
+    conn = get_connection(db_path)
+    try:
+        row = conn.execute("SELECT * FROM books WHERE id = ?", (book_id,)).fetchone()
+        if row:
+            return Book(
+                id=row["id"],
+                title=row["title"],
+                author=row["author"] or "",
+                language=row["language"] or "he",
+                source_path=row["source_path"],
+                file_format=row["file_format"],
+                chunk_count=row["chunk_count"] or 0,
+                ingested_at=datetime.fromisoformat(row["ingested_at"]),
+                status=row["status"] or "active",
+            )
+        return None
+    finally:
+        conn.close()
+
+
+def list_books(db_path: str | Path) -> list[Book]:
+    """Retrieve all books.
+
+    Args:
+        db_path: Path to the SQLite database file.
+
+    Returns:
+        List of all Book instances.
+    """
+    conn = get_connection(db_path)
+    try:
+        rows = conn.execute("SELECT * FROM books ORDER BY ingested_at DESC").fetchall()
+        return [
+            Book(
+                id=row["id"],
+                title=row["title"],
+                author=row["author"] or "",
+                language=row["language"] or "he",
+                source_path=row["source_path"],
+                file_format=row["file_format"],
+                chunk_count=row["chunk_count"] or 0,
+                ingested_at=datetime.fromisoformat(row["ingested_at"]),
+                status=row["status"] or "active",
+            )
+            for row in rows
+        ]
+    finally:
+        conn.close()
+
+
+def delete_book(db_path: str | Path, book_id: str) -> bool:
+    """Delete a book record.
+
+    Args:
+        db_path: Path to the SQLite database file.
+        book_id: The book's UUID.
+
+    Returns:
+        True if a record was deleted, False otherwise.
+    """
+    conn = get_connection(db_path)
+    try:
+        cursor = conn.execute("DELETE FROM books WHERE id = ?", (book_id,))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def update_book_status(db_path: str | Path, book_id: str, status: str) -> None:
+    """Update the status of a book.
+
+    Args:
+        db_path: Path to the SQLite database file.
+        book_id: The book's UUID.
+        status: New status ("active", "ingesting", "error").
+    """
+    conn = get_connection(db_path)
+    try:
+        conn.execute("UPDATE books SET status = ? WHERE id = ?", (status, book_id))
         conn.commit()
     finally:
         conn.close()

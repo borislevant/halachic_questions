@@ -64,7 +64,7 @@ def mock_chunker():
             book_id="book123",
             book_title="Test Book",
             text="זוהי פיסקה ראשונה",
-            position=0,
+            chunk_index=0,
             token_count=50,
         ),
         Chunk(
@@ -72,7 +72,7 @@ def mock_chunker():
             book_id="book123",
             book_title="Test Book",
             text="זוהי פיסקה שנייה",
-            position=1,
+            chunk_index=1,
             token_count=50,
         ),
     ]

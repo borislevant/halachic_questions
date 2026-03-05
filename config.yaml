@@ -18,7 +18,7 @@ retrieval:
   top_k: 5
   initial_candidates: 20
   min_similarity: 0.3
-  use_reranker: false
+  use_reranker: true
 
 generation:
   provider: "anthropic"

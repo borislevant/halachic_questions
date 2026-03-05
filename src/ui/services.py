@@ -16,6 +16,7 @@ from src.generation.summarizer import Summarizer
 from src.ingestion.chunker import HalachicChunker
 from src.ingestion.parser import BookParser
 from src.ingestion.pipeline import IngestionPipeline
+from src.retrieval.reranker import Reranker
 from src.retrieval.retriever import Retriever
 from src.retrieval.vector_store import VectorStore
 
@@ -46,10 +47,17 @@ def load_services() -> dict:
     )
     vector_store.initialize()
 
+    # Initialize reranker if enabled
+    reranker = None
+    if config.retrieval.use_reranker:
+        logger.info("Reranker enabled, initializing cross-encoder model")
+        reranker = Reranker(device=config.embedding.device)
+
     retriever = Retriever(
         embedder=embedder,
         vector_store=vector_store,
         config=config.retrieval,
+        reranker=reranker,
     )
 
     summarizer = Summarizer(

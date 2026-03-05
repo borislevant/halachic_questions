@@ -80,7 +80,7 @@ def _run_ingestion(
             report = pipeline.ingest_book(
                 file_path=tmp_path,
                 author=author.strip(),
-                show_progress=False,
+                show_progress=True,
             )
     finally:
         # Always clean up the temp file

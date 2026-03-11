@@ -82,17 +82,17 @@ def _handle_search(
     st.session_state.search_error = None
 
     try:
-        with st.spinner("🔍 Retrieving sources..."):
+        with st.spinner("🔍 מחפש מקורות..."):
             sources = retriever.search(question)
 
         if not sources:
             st.session_state.search_error = (
-                "No relevant sources found for that question. "
-                "Try rephrasing, or ingest more books."
+                "לא נמצאו מקורות רלוונטיים לשאלה זו. "
+                "נסה לנסח מחדש או להוסיף ספרים נוספים."
             )
             return
 
-        with st.spinner("✍️ Generating answer..."):
+        with st.spinner("✍️ מייצר תשובה..."):
             answer = summarizer.generate(question, sources)
             # answer may be None if all LLM providers fail — that's OK,
             # the UI still shows retrieved sources.
@@ -113,7 +113,7 @@ def _handle_search(
         # Raised by Retriever when vector store is not initialised
         st.session_state.search_error = str(exc)
     except Exception as exc:
-        st.session_state.search_error = f"Unexpected error: {exc}"
+        st.session_state.search_error = f"שגיאה בלתי צפויה: {exc}"
 
 
 # ---------------------------------------------------------------------------
@@ -126,10 +126,9 @@ def _render_header() -> None:
     st.title("📚 Halachic Q&A")
     disclaimer = (
         '<div class="disclaimer">'
-        "⚠️ <strong>Research tool only.</strong> "
-        "This application provides AI-generated answers based on retrieved source texts "
-        "for study purposes. It is <em>not</em> a substitute for a ruling from a "
-        "qualified Rabbi."
+        "⚠️ <strong>כלי מחקר בלבד.</strong> "
+        "יישום זה מספק תשובות המבוססות על AI למטרות לימוד. "
+        "הוא <em>אינו</em> תחליף לפסק הלכה מרב מוסמך."
         "</div>"
     )
     st.markdown(disclaimer, unsafe_allow_html=True)
@@ -159,16 +158,16 @@ def _render_question_form(
     """
     with st.form(key="question_form", clear_on_submit=False):
         question = st.text_area(
-            "Your question",
+            "השאלה שלך",
             placeholder=(
-                "e.g. What is the law regarding handwashing before a meal?"
+                "לדוגמה: מה דין נטילת ידיים לסעודה?"
             ),
             height=100,
             label_visibility="collapsed",
             key="question_input",
         )
         submitted = st.form_submit_button(
-            "🔍 Search",
+            "🔍 חפש",
             use_container_width=True,
             disabled=st.session_state.is_searching,
         )
@@ -176,7 +175,7 @@ def _render_question_form(
     if submitted:
         question = question.strip()
         if not question:
-            st.warning("Please enter a question before searching.")
+            st.warning("נא להזין שאלה לפני החיפוש.")
         else:
             st.session_state.is_searching = True
             _handle_search(question, retriever, summarizer, user, db_path)
@@ -224,16 +223,16 @@ def _render_qa_page(user: User) -> None:
     retriever: Retriever = services["retriever"]
     summarizer: Summarizer = services["summarizer"]
     pipeline = services["pipeline"]
-    db_path = config.storage.sqlite_path
+    db_path = config["storage"]["sqlite_path"]
 
     # ---- Sidebar ----
     with st.sidebar:
         # User info and logout
         st.markdown(f"**👤 {user.username}**")
         if user.role == "admin":
-            st.caption("🔑 Administrator")
+            st.caption("🔑 מנהל מערכת")
         
-        if st.button("🚪 Logout", use_container_width=True):
+        if st.button("🚪 התנתק", use_container_width=True):
             st.session_state.auth_token = None
             st.session_state.user = None
             st.session_state.query_result = None
@@ -283,10 +282,10 @@ def main() -> None:
     
     # Initialize auth service
     auth_service = AuthService(
-        db_path=config.storage.sqlite_path,
-        jwt_secret=config.auth.jwt_secret_key,
-        jwt_algorithm=config.auth.jwt_algorithm,
-        jwt_expiry_hours=config.auth.jwt_expiry_hours,
+        db_path=config["storage"]["sqlite_path"],
+        jwt_secret=config["auth"]["jwt_secret_key"],
+        jwt_algorithm=config["auth"]["jwt_algorithm"],
+        jwt_expiry_hours=config["auth"]["jwt_expiry_hours"],
     )
     
     # Check authentication

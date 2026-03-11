@@ -6,22 +6,25 @@ from pathlib import Path
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
+from src.auth.permissions import can_add_shared_book
 from src.config import AppConfig
 from src.ingestion.pipeline import IngestionPipeline
+from src.models.user import User
 
 _SUPPORTED_TYPES = ["pdf", "txt", "docx", "html", "htm"]
 
 
-def render_ingestion(pipeline: IngestionPipeline, config: AppConfig) -> None:
+def render_ingestion(pipeline: IngestionPipeline, config: AppConfig, user: User) -> None:
     """Render the 'Upload a Book' form in the sidebar.
 
     Accepts a file upload, optional metadata overrides, and triggers
-    ``IngestionPipeline.ingest_book()``. Displays progress feedback and
-    calls ``st.rerun()`` on success so the book list refreshes.
+    ``IngestionPipeline.ingest_book()``. Shows 'Add as shared' checkbox
+    for admins. Displays progress feedback and calls ``st.rerun()`` on success.
 
     Args:
         pipeline: The ingestion pipeline to call.
         config: Application configuration (provides books_dir path).
+        user: The authenticated user.
     """
     st.markdown("### Upload a Book")
 
@@ -37,21 +40,33 @@ def render_ingestion(pipeline: IngestionPipeline, config: AppConfig) -> None:
         placeholder="e.g. Yosef Karo",
         key="ingest_author",
     )
+    
+    # Admin-only: option to add as shared book
+    add_as_shared = False
+    if can_add_shared_book(user):
+        add_as_shared = st.checkbox(
+            "Add as shared book (visible to all)",
+            value=False,
+            key="add_as_shared",
+            help="Administrators only: shared books are accessible to all users",
+        )
 
     ingest_btn = st.button(
-        "⬆️ Ingest",
+        "⬆️ Upload & Ingest",
         disabled=uploaded_file is None,
         use_container_width=True,
         key="ingest_button",
     )
 
     if ingest_btn and uploaded_file is not None:
-        _run_ingestion(uploaded_file, author_override, pipeline, config)
+        user_id = None if add_as_shared else user.id
+        _run_ingestion(uploaded_file, author_override, user_id, pipeline, config)
 
 
 def _run_ingestion(
     uploaded_file: UploadedFile,
     author: str,
+    user_id: str | None,
     pipeline: IngestionPipeline,
     config: AppConfig,
 ) -> None:
@@ -65,6 +80,7 @@ def _run_ingestion(
     Args:
         uploaded_file: The Streamlit UploadedFile object.
         author: Optional author name override.
+        user_id: Optional user ID (None = shared book).
         pipeline: The ingestion pipeline.
         config: Application configuration.
     """
@@ -76,10 +92,11 @@ def _run_ingestion(
         tmp_path = Path(tmp.name)
 
     try:
-        with st.spinner(f"Ingesting '{uploaded_file.name}'…"):
+        with st.spinner(f"Ingesting '{uploaded_file.name}'..."):
             report = pipeline.ingest_book(
                 file_path=tmp_path,
                 author=author.strip(),
+                user_id=user_id,
                 show_progress=True,
             )
     finally:

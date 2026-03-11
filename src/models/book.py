@@ -18,3 +18,4 @@ class Book(BaseModel):
     chunk_count: int = 0
     ingested_at: datetime = Field(default_factory=datetime.now)
     status: str = "active"  # "active", "ingesting", "error"
+    user_id: str | None = None  # None = shared book, else private to user

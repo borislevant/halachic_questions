@@ -60,6 +60,15 @@ class StorageConfig(BaseModel):
     processed_dir: str = "./data/processed"
 
 
+class AuthConfig(BaseModel):
+    """Authentication configuration."""
+
+    jwt_secret_key: str = "CHANGE_ME_IN_PRODUCTION"
+    jwt_algorithm: str = "HS256"
+    jwt_expiry_hours: int = 168
+    password_min_length: int = 8
+
+
 class AppConfig(BaseModel):
     """Root application configuration."""
 
@@ -69,6 +78,7 @@ class AppConfig(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
     storage: StorageConfig = Field(default_factory=StorageConfig)
+    auth: AuthConfig = Field(default_factory=AuthConfig)
 
     # API keys loaded from environment
     anthropic_api_key: str | None = None

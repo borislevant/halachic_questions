@@ -46,3 +46,4 @@ class QueryResult(BaseModel):
     answer: GeneratedAnswer | None = None
     timestamp: datetime = Field(default_factory=datetime.now)
     feedback: str | None = None  # "positive", "negative", None
+    user_id: str = ""  # User who created this query

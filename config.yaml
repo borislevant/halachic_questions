@@ -3,6 +3,12 @@ app:
   version: "1.0.0"
   language: "he"
 
+auth:
+  jwt_secret_key: "CHANGE_ME_IN_PRODUCTION_USE_openssl_rand_-hex_32"
+  jwt_algorithm: "HS256"
+  jwt_expiry_hours: 168  # 7 days
+  password_min_length: 8
+
 embedding:
   model: "intfloat/multilingual-e5-large"
   device: "auto"
@@ -18,7 +24,7 @@ retrieval:
   top_k: 5
   initial_candidates: 20
   min_similarity: 0.3
-  use_reranker: false
+  use_reranker: true
 
 generation:
   provider: "anthropic"

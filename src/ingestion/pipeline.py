@@ -92,6 +92,7 @@ class IngestionPipeline:
         file_path: str | Path,
         author: str = "",
         book_id: str | None = None,
+        user_id: str | None = None,
         show_progress: bool = True,
     ) -> IngestionReport:
         """Ingest a book file into the system.
@@ -100,6 +101,7 @@ class IngestionPipeline:
             file_path: Path to the book file.
             author: Optional author name (if not detected from file).
             book_id: Optional book ID (for re-indexing). If None, generates a new UUID.
+            user_id: Optional user ID (book owner). If None, book is shared (public).
             show_progress: Whether to show progress bars.
 
         Returns:
@@ -146,6 +148,7 @@ class IngestionPipeline:
                 chunk_count=0,
                 ingested_at=datetime.now(),
                 status="ingesting",
+                user_id=user_id,
             )
 
             # Write to DB with status='ingesting'

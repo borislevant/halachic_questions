@@ -15,13 +15,13 @@ class Reranker:
     More accurate but slower than bi-encoders.
 
     Args:
-        model_name: Cross-encoder model (default: ms-marco-multilingual-MiniLMv2-L6-v2).
+        model_name: Cross-encoder model (default: BAAI bge-reranker multilingual).
         device: Device for inference ("cpu", "cuda", "mps", "auto").
     """
 
     def __init__(
         self,
-        model_name: str = "cross-encoder/ms-marco-multilingual-MiniLM-L6-v2",
+        model_name: str = "BAAI/bge-reranker-base",
         device: str = "auto",
     ) -> None:
         self._model_name = model_name

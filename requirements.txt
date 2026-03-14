@@ -18,6 +18,10 @@ openai>=1.50
 chardet>=5.0
 tqdm>=4.66
 
+# Authentication
+bcrypt>=4.0.0
+python-jose[cryptography]>=3.3.0
+
 # ML backend (sentence-transformers dependency)
 torch>=2.0
 

@@ -25,7 +25,11 @@ def get_connection(db_path: str | Path) -> sqlite3.Connection:
 
 
 def initialize_database(db_path: str | Path) -> None:
-    """Create the database schema if it doesn't exist.
+    """Create the database schema and apply any pending migrations.
+
+    Safe to call on an already-initialised database: ``CREATE TABLE IF NOT
+    EXISTS`` skips existing tables, and column migrations are guarded by a
+    ``PRAGMA table_info`` check so they never run twice.
 
     Args:
         db_path: Path to the SQLite database file.
@@ -34,6 +38,7 @@ def initialize_database(db_path: str | Path) -> None:
 
     conn = get_connection(db_path)
     try:
+        # ---- Create tables (no-op if they already exist) ----
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS users (
@@ -45,7 +50,7 @@ def initialize_database(db_path: str | Path) -> None:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_login TIMESTAMP
             );
-            
+
             CREATE TABLE IF NOT EXISTS books (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
@@ -55,9 +60,7 @@ def initialize_database(db_path: str | Path) -> None:
                 file_format TEXT NOT NULL,
                 chunk_count INTEGER DEFAULT 0,
                 ingested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                status TEXT DEFAULT 'active',
-                user_id TEXT,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                status TEXT DEFAULT 'active'
             );
 
             CREATE TABLE IF NOT EXISTS query_history (
@@ -69,9 +72,7 @@ def initialize_database(db_path: str | Path) -> None:
                 tokens_used INTEGER,
                 latency_ms INTEGER,
                 feedback TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                user_id TEXT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users(id)
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE TABLE IF NOT EXISTS settings (
@@ -79,16 +80,56 @@ def initialize_database(db_path: str | Path) -> None:
                 value TEXT NOT NULL,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
-            
-            CREATE INDEX IF NOT EXISTS idx_books_user_id ON books(user_id);
-            CREATE INDEX IF NOT EXISTS idx_query_history_user_id ON query_history(user_id);
-            CREATE INDEX IF NOT EXISTS idx_query_history_created_at ON query_history(created_at DESC);
-            CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+            """
+        )
+        conn.commit()
+
+        # ---- Column migrations (idempotent) ----
+        _add_column_if_missing(conn, "books", "user_id", "TEXT")
+        _add_column_if_missing(conn, "query_history", "user_id", "TEXT")
+
+        # ---- Indexes (IF NOT EXISTS is safe to run every time) ----
+        conn.executescript(
+            """
+            CREATE INDEX IF NOT EXISTS idx_books_user_id
+                ON books(user_id);
+            CREATE INDEX IF NOT EXISTS idx_query_history_user_id
+                ON query_history(user_id);
+            CREATE INDEX IF NOT EXISTS idx_query_history_created_at
+                ON query_history(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_users_username
+                ON users(username);
             """
         )
         conn.commit()
     finally:
         conn.close()
+
+
+def _add_column_if_missing(
+    conn: sqlite3.Connection,
+    table: str,
+    column: str,
+    col_type: str,
+) -> None:
+    """Add a column to a table only when it does not already exist.
+
+    Uses ``PRAGMA table_info`` to inspect the live schema so this is safe
+    to run against both fresh and pre-existing databases.
+
+    Args:
+        conn: Open SQLite connection.
+        table: Table name to alter.
+        column: Column name to add.
+        col_type: SQL type string (e.g. ``"TEXT"``, ``"INTEGER"``).
+    """
+    existing = {
+        row[1]
+        for row in conn.execute(f"PRAGMA table_info({table})").fetchall()
+    }
+    if column not in existing:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+        conn.commit()
 
 
 def upsert_book(db_path: str | Path, book: Book) -> None:

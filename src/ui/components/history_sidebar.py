@@ -151,7 +151,6 @@ def _load_query_into_view(db_path: str, query_id: str, user_id: str) -> None:
             section_path=src_data["section_path"],
             text=src_data["text"],
             book_id="",  # Not stored in history
-            position=0,  # Not stored in history
         )
         sources.append(
             RetrievalResult(

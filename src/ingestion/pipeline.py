@@ -13,6 +13,7 @@ from src.ingestion.chunker import HalachicChunker
 from src.ingestion.parser import BookParser
 from src.models.book import Book
 from src.models.chunk import Chunk
+from src.retrieval.bm25_store import BM25Store
 from src.retrieval.vector_store import VectorStore
 from src.storage import database
 
@@ -63,7 +64,8 @@ class IngestionPipeline:
     2. Detect structure and chunk text
     3. Generate embeddings for each chunk
     4. Store chunks and embeddings in vector database
-    5. Save book metadata to SQLite
+    5. Build BM25 index for keyword search
+    6. Save book metadata to SQLite
 
     Args:
         config: Application configuration.
@@ -71,6 +73,7 @@ class IngestionPipeline:
         chunker: Text chunker.
         embedder: Embedding generator.
         vector_store: Vector database.
+        bm25_store: Optional BM25 keyword search index.
     """
 
     def __init__(
@@ -80,12 +83,14 @@ class IngestionPipeline:
         chunker: HalachicChunker,
         embedder: TextEmbedder,
         vector_store: VectorStore,
+        bm25_store: BM25Store | None = None,
     ) -> None:
         self._config = config
         self._parser = parser
         self._chunker = chunker
         self._embedder = embedder
         self._vector_store = vector_store
+        self._bm25_store = bm25_store
 
     def ingest_book(
         self,
@@ -206,7 +211,16 @@ class IngestionPipeline:
                 show_progress=show_progress,
             )
 
-            # Step 5: Save book metadata with final status
+            # Step 5: Build BM25 index (if enabled)
+            if self._bm25_store is not None:
+                logger.info("Building BM25 index")
+                # Get all chunks from vector store (including this book's new chunks)
+                all_chunks = self._get_all_chunks_from_vector_store()
+                self._bm25_store.build_index(all_chunks, show_progress=show_progress)
+                self._bm25_store.save_index()
+                logger.info("BM25 index built and saved")
+
+            # Step 6: Save book metadata with final status
             book.chunk_count = len(chunks)
             book.status = "active"
             database.upsert_book(self._config.storage.sqlite_path, book)
@@ -248,6 +262,11 @@ class IngestionPipeline:
 
             # Delete from vector store
             deleted_count = self._vector_store.delete_by_book_id(book_id)
+
+            # Delete from BM25 store and rebuild index
+            if self._bm25_store is not None:
+                bm25_deleted = self._bm25_store.delete_by_book_id(book_id)
+                logger.info("Removed %d chunks from BM25 index", bm25_deleted)
 
             # Delete from SQLite metadata
             db_deleted = database.delete_book(self._config.storage.sqlite_path, book_id)
@@ -360,6 +379,63 @@ class IngestionPipeline:
 
         return reports
 
+    def _get_all_chunks_from_vector_store(self) -> list[Chunk]:
+        """Retrieve all chunks from the vector store to rebuild BM25 index.
+
+        Returns:
+            List of all Chunk objects currently in the vector store.
+        """
+        # Get all books from database
+        books = database.get_all_books(self._config.storage.sqlite_path)
+        
+        all_chunks: list[Chunk] = []
+        
+        for book in books:
+            # Query vector store for all chunks of this book
+            # We use a dummy embedding since we're filtering by book_id
+            # and want ALL chunks regardless of similarity
+            try:
+                # Get chunk count
+                if book.chunk_count == 0:
+                    continue
+                
+                # Create a dummy query and get many results
+                # This is inefficient but ChromaDB doesn't have a "get all by filter" method
+                # For production, consider maintaining a separate chunks table in SQLite
+                dummy_embedding = [0.0] * self._embedder.get_embedding_dimension()
+                results = self._vector_store.search(
+                    query_embedding=dummy_embedding,
+                    top_k=book.chunk_count,
+                    filter_dict={"book_id": book.id},
+                )
+                
+                # Convert results to Chunk objects
+                for result in results:
+                    metadata = result["metadata"]
+                    chunk = Chunk(
+                        id=result["id"],
+                        text=result["text"],
+                        book_id=metadata.get("book_id", ""),
+                        book_title=metadata.get("book_title", ""),
+                        book_author=metadata.get("book_author", ""),
+                        section_path=metadata.get("section_path", ""),
+                        section_type=metadata.get("section_type", ""),
+                        chunk_index=metadata.get("chunk_index", 0),
+                        total_chunks_in_section=metadata.get("total_chunks_in_section", 1),
+                        language=metadata.get("language", "he"),
+                        char_start=metadata.get("char_start", 0),
+                        char_end=metadata.get("char_end", 0),
+                        token_count=metadata.get("token_count", 0),
+                    )
+                    all_chunks.append(chunk)
+                    
+            except Exception:
+                logger.exception("Failed to retrieve chunks for book %s", book.id)
+                continue
+        
+        logger.info("Retrieved %d total chunks from vector store", len(all_chunks))
+        return all_chunks
+
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about the ingestion system.
 
@@ -407,6 +483,13 @@ def create_ingestion_pipeline(config: AppConfig) -> IngestionPipeline:
     )
     vector_store.initialize()
 
+    # Create BM25 store if hybrid retrieval is enabled
+    bm25_store = None
+    if config.retrieval.use_hybrid:
+        bm25_store = BM25Store(bm25_dir=config.storage.bm25_dir)
+        # Try to load existing index
+        bm25_store.load_index()
+
     # Assemble pipeline
     pipeline = IngestionPipeline(
         config=config,
@@ -414,6 +497,7 @@ def create_ingestion_pipeline(config: AppConfig) -> IngestionPipeline:
         chunker=chunker,
         embedder=embedder,
         vector_store=vector_store,
+        bm25_store=bm25_store,
     )
 
     return pipeline

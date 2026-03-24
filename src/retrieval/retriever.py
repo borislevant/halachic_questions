@@ -7,6 +7,7 @@ from src.config import RetrievalConfig
 from src.embeddings.embedder import TextEmbedder
 from src.models.chunk import Chunk
 from src.models.query_result import RetrievalResult
+from src.retrieval.bm25_store import BM25Store
 from src.retrieval.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ class Retriever:
     Orchestrates:
     - Query embedding
     - Vector similarity search
+    - Optional BM25 keyword search
+    - Hybrid search with fusion (RRF)
     - Optional reranking
     - Score filtering
     - Context enrichment
@@ -26,6 +29,7 @@ class Retriever:
         embedder: TextEmbedder instance.
         vector_store: VectorStore instance.
         config: RetrievalConfig with top_k, min_similarity, etc.
+        bm25_store: Optional BM25Store for hybrid retrieval.
         reranker: Optional Reranker for precision improvement.
     """
 
@@ -34,11 +38,13 @@ class Retriever:
         embedder: TextEmbedder,
         vector_store: VectorStore,
         config: RetrievalConfig,
+        bm25_store: BM25Store | None = None,
         reranker: Any | None = None,  # Use Any to avoid circular import
     ) -> None:
         self._embedder = embedder
         self._vector_store = vector_store
         self._config = config
+        self._bm25_store = bm25_store
         self._reranker = reranker
 
     def search(
@@ -80,24 +86,40 @@ class Retriever:
             )
 
         try:
-            # Step 1: Embed the query with correct prefix
-            logger.debug("Embedding query: '%s'", question[:50])
-            query_embedding = self._embedder.embed_query(question)
-
-            # Step 2: Vector similarity search
-            # Retrieve more candidates if we're going to rerank
-            search_top_k = initial_candidates if self._reranker else final_top_k
-            logger.debug(
-                "Searching vector store (top_k=%d, filter=%s)",
-                search_top_k,
-                filter_dict,
+            # Determine if using hybrid search
+            use_hybrid = (
+                self._config.use_hybrid
+                and self._bm25_store is not None
+                and self._bm25_store.is_loaded
             )
 
-            raw_results = self._vector_store.search(
-                query_embedding=query_embedding,
-                top_k=search_top_k,
-                filter_dict=filter_dict,
-            )
+            if use_hybrid:
+                logger.debug("Using hybrid retrieval (vector + BM25)")
+                raw_results = self._hybrid_search(
+                    question=question,
+                    top_k=initial_candidates if self._reranker else final_top_k,
+                    filter_dict=filter_dict,
+                )
+            else:
+                logger.debug("Using vector-only retrieval")
+                # Step 1: Embed the query with correct prefix
+                logger.debug("Embedding query: '%s'", question[:50])
+                query_embedding = self._embedder.embed_query(question)
+
+                # Step 2: Vector similarity search
+                # Retrieve more candidates if we're going to rerank
+                search_top_k = initial_candidates if self._reranker else final_top_k
+                logger.debug(
+                    "Searching vector store (top_k=%d, filter=%s)",
+                    search_top_k,
+                    filter_dict,
+                )
+
+                raw_results = self._vector_store.search(
+                    query_embedding=query_embedding,
+                    top_k=search_top_k,
+                    filter_dict=filter_dict,
+                )
 
             if not raw_results:
                 logger.info("No results found for query")
@@ -235,3 +257,143 @@ class Retriever:
                 context_after_list.append(None)
 
         return context_before_list, context_after_list
+
+    def _hybrid_search(
+        self,
+        question: str,
+        top_k: int,
+        filter_dict: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Perform hybrid search combining vector and BM25 results.
+
+        Uses Reciprocal Rank Fusion (RRF) to merge ranked lists from both
+        retrieval methods.
+
+        Args:
+            question: The search query.
+            top_k: Number of candidates to retrieve from each method.
+            filter_dict: Optional metadata filters.
+
+        Returns:
+            Merged and re-ranked list of results.
+        """
+        # Get vector search results
+        logger.debug("Hybrid search: performing vector search")
+        query_embedding = self._embedder.embed_query(question)
+        vector_results = self._vector_store.search(
+            query_embedding=query_embedding,
+            top_k=top_k,
+            filter_dict=filter_dict,
+        )
+
+        # Get BM25 search results
+        logger.debug("Hybrid search: performing BM25 search")
+        bm25_results = self._bm25_store.search(  # type: ignore
+            query=question,
+            top_k=top_k,
+            filter_dict=filter_dict,
+        )
+
+        # Merge using Reciprocal Rank Fusion
+        merged_results = self._reciprocal_rank_fusion(
+            vector_results=vector_results,
+            bm25_results=bm25_results,
+            vector_weight=self._config.vector_weight,
+            bm25_weight=self._config.bm25_weight,
+        )
+
+        logger.debug(
+            "Hybrid search: merged %d vector + %d BM25 → %d results",
+            len(vector_results),
+            len(bm25_results),
+            len(merged_results),
+        )
+
+        return merged_results
+
+    def _reciprocal_rank_fusion(
+        self,
+        vector_results: list[dict[str, Any]],
+        bm25_results: list[dict[str, Any]],
+        vector_weight: float = 0.7,
+        bm25_weight: float = 0.3,
+        k: int = 60,
+    ) -> list[dict[str, Any]]:
+        """Merge two ranked lists using Reciprocal Rank Fusion (RRF).
+
+        RRF formula: score(d) = Σ weight / (k + rank(d))
+
+        Where:
+        - rank(d) is the rank of document d in a given list (1-indexed)
+        - k is a constant (default 60, standard in RRF)
+        - weight is the importance of each retrieval method
+
+        Args:
+            vector_results: Results from vector search.
+            bm25_results: Results from BM25 search.
+            vector_weight: Weight for vector search (default 0.7).
+            bm25_weight: Weight for BM25 search (default 0.3).
+            k: RRF constant (default 60).
+
+        Returns:
+            Merged list of results, sorted by RRF score (highest first).
+        """
+        # Build lookup dicts: chunk_id -> (rank, original_result)
+        vector_ranks: dict[str, tuple[int, dict[str, Any]]] = {
+            result["id"]: (rank + 1, result)
+            for rank, result in enumerate(vector_results)
+        }
+
+        bm25_ranks: dict[str, tuple[int, dict[str, Any]]] = {
+            result["id"]: (rank + 1, result)
+            for rank, result in enumerate(bm25_results)
+        }
+
+        # Compute RRF scores for all unique chunk IDs
+        all_chunk_ids = set(vector_ranks.keys()) | set(bm25_ranks.keys())
+        rrf_scores: dict[str, float] = {}
+
+        for chunk_id in all_chunk_ids:
+            score = 0.0
+
+            # Add vector contribution
+            if chunk_id in vector_ranks:
+                rank, _ = vector_ranks[chunk_id]
+                score += vector_weight / (k + rank)
+
+            # Add BM25 contribution
+            if chunk_id in bm25_ranks:
+                rank, _ = bm25_ranks[chunk_id]
+                score += bm25_weight / (k + rank)
+
+            rrf_scores[chunk_id] = score
+
+        # Sort by RRF score (highest first)
+        sorted_ids = sorted(
+            rrf_scores.keys(),
+            key=lambda cid: rrf_scores[cid],
+            reverse=True,
+        )
+
+        # Build final results list
+        merged: list[dict[str, Any]] = []
+
+        for chunk_id in sorted_ids:
+            # Prefer vector result if available (has embedding-based metadata)
+            if chunk_id in vector_ranks:
+                _, result = vector_ranks[chunk_id]
+            else:
+                _, result = bm25_ranks[chunk_id]
+
+            # Create new result dict with RRF score
+            merged_result = {
+                "id": result["id"],
+                "text": result["text"],
+                "metadata": result["metadata"],
+                "score": rrf_scores[chunk_id],  # Use RRF score
+                "original_vector_score": vector_ranks.get(chunk_id, (None, {}))[1].get("score"),
+                "original_bm25_score": bm25_ranks.get(chunk_id, (None, {}))[1].get("score"),
+            }
+            merged.append(merged_result)
+
+        return merged

@@ -17,6 +17,7 @@ openai>=1.50
 # Utilities
 chardet>=5.0
 tqdm>=4.66
+rank-bm25>=0.2.2
 
 # Authentication
 bcrypt>=4.0.0

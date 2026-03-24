@@ -9,6 +9,7 @@ from src.config import RetrievalConfig
 from src.embeddings.embedder import TextEmbedder
 from src.models.chunk import Chunk
 from src.models.query_result import RetrievalResult
+from src.retrieval.bm25_store import BM25Store
 from src.retrieval.reranker import Reranker
 from src.retrieval.retriever import Retriever
 from src.retrieval.vector_store import VectorStore
@@ -22,6 +23,25 @@ def config() -> RetrievalConfig:
         initial_candidates=20,
         min_similarity=0.3,
         use_reranker=False,
+        use_hybrid=False,
+        vector_weight=0.7,
+        bm25_weight=0.3,
+        bm25_dir="./db/bm25",
+    )
+
+
+@pytest.fixture
+def hybrid_config() -> RetrievalConfig:
+    """Hybrid retrieval configuration for tests."""
+    return RetrievalConfig(
+        top_k=5,
+        initial_candidates=20,
+        min_similarity=0.3,
+        use_reranker=False,
+        use_hybrid=True,
+        vector_weight=0.7,
+        bm25_weight=0.3,
+        bm25_dir="./db/bm25",
     )
 
 
@@ -140,6 +160,73 @@ def mock_reranker() -> MagicMock:
 
     reranker.rerank.side_effect = rerank_side_effect
     return reranker
+
+
+@pytest.fixture
+def mock_bm25_store() -> MagicMock:
+    """Mock BM25Store for hybrid retrieval tests."""
+    store = MagicMock(spec=BM25Store)
+    store.is_loaded = True
+
+    # Default BM25 search results (different from vector results)
+    store.search.return_value = [
+        {
+            "id": "chunk-3",  # Different from top vector result
+            "score": 12.5,
+            "text": "תוכן שלישי",
+            "metadata": {
+                "book_id": "book-2",
+                "book_title": "ספר ב",
+                "book_author": "רבי ב",
+                "section_path": "סימן א",
+                "section_type": "siman",
+                "language": "he",
+                "char_start": 0,
+                "char_end": 150,
+                "token_count": 30,
+                "chunk_index": 0,
+                "total_chunks_in_section": 2,
+            },
+        },
+        {
+            "id": "chunk-1",
+            "score": 10.2,
+            "text": "תוכן ראשון",
+            "metadata": {
+                "book_id": "book-1",
+                "book_title": "ספר א",
+                "book_author": "רבי א",
+                "section_path": "סימן א",
+                "section_type": "siman",
+                "language": "he",
+                "char_start": 0,
+                "char_end": 100,
+                "token_count": 20,
+                "chunk_index": 0,
+                "total_chunks_in_section": 3,
+            },
+        },
+        {
+            "id": "chunk-4",  # Unique to BM25
+            "score": 8.7,
+            "text": "תוכן רביעי",
+            "metadata": {
+                "book_id": "book-2",
+                "book_title": "ספר ב",
+                "book_author": "רבי ב",
+                "section_path": "סימן ב",
+                "section_type": "siman",
+                "language": "he",
+                "char_start": 150,
+                "char_end": 250,
+                "token_count": 28,
+                "chunk_index": 1,
+                "total_chunks_in_section": 2,
+            },
+        },
+    ]
+
+    return store
 
 
 class TestRetrieverBasicSearch:
@@ -493,3 +580,266 @@ class TestRetrieverErrorHandling:
 
         assert all(r.context_before is None for r in results)
         assert all(r.context_after is None for r in results)
+
+
+class TestRetrieverHybridSearch:
+    """Test hybrid retrieval with BM25 + vector search."""
+
+    def test_hybrid_search_uses_both_stores(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search calls both vector store and BM25 store."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Both stores should be called
+        mock_vector_store.search.assert_called_once()
+        mock_bm25_store.search.assert_called_once()
+        assert len(results) > 0
+
+    def test_hybrid_search_merges_results_from_both_sources(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search merges vector and BM25 results."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה", include_context=False)
+
+        # Should have results from both sources merged
+        result_ids = {r.chunk.id for r in results}
+        # chunk-1 and chunk-3 appear in both, chunk-2 only in vector, chunk-4 only in BM25
+        assert "chunk-1" in result_ids or "chunk-3" in result_ids
+
+    def test_hybrid_disabled_when_bm25_not_loaded(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid falls back to vector-only when BM25 not loaded."""
+        mock_bm25_store.is_loaded = False
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Only vector store should be called
+        mock_vector_store.search.assert_called_once()
+        mock_bm25_store.search.assert_not_called()
+        assert len(results) > 0
+
+    def test_hybrid_disabled_when_bm25_store_none(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid falls back to vector-only when BM25 store is None."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=None,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Only vector store should be called
+        mock_vector_store.search.assert_called_once()
+        assert len(results) > 0
+
+    def test_vector_only_search_when_hybrid_disabled_in_config(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        config: RetrievalConfig,  # Non-hybrid config
+    ) -> None:
+        """Test vector-only search when hybrid disabled in config."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Only vector store should be called
+        mock_vector_store.search.assert_called_once()
+        mock_bm25_store.search.assert_not_called()
+        assert len(results) > 0
+
+    def test_hybrid_search_passes_filters_to_both_stores(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search passes filter_dict to both stores."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        filter_dict = {"book_id": "book-1"}
+        retriever.search("שאלה", filter_dict=filter_dict)
+
+        # Both stores should receive the filter
+        vector_call_args = mock_vector_store.search.call_args
+        bm25_call_args = mock_bm25_store.search.call_args
+
+        assert vector_call_args.kwargs["filter_dict"] == filter_dict
+        assert bm25_call_args.kwargs["filter_dict"] == filter_dict
+
+    def test_hybrid_search_respects_top_k(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search respects top_k parameter."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        retriever.search("שאלה", top_k=3)
+
+        # Both stores should be called with top_k=3
+        vector_call_args = mock_vector_store.search.call_args
+        bm25_call_args = mock_bm25_store.search.call_args
+
+        assert vector_call_args.kwargs["top_k"] == 3
+        assert bm25_call_args.kwargs["top_k"] == 3
+
+    def test_hybrid_search_with_reranker(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        mock_reranker: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search works with reranker."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+            reranker=mock_reranker,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Both stores should be called with initial_candidates
+        vector_call_args = mock_vector_store.search.call_args
+        bm25_call_args = mock_bm25_store.search.call_args
+
+        assert vector_call_args.kwargs["top_k"] == hybrid_config.initial_candidates
+        assert bm25_call_args.kwargs["top_k"] == hybrid_config.initial_candidates
+
+        # Reranker should be called on merged results
+        mock_reranker.rerank.assert_called_once()
+        assert len(results) > 0
+
+    def test_rrf_fusion_combines_rankings(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test RRF properly combines rankings from both methods."""
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה", include_context=False)
+
+        # Results should have scores
+        assert all(r.similarity_score > 0 for r in results)
+        # Scores should be sorted descending
+        scores = [r.similarity_score for r in results]
+        assert scores == sorted(scores, reverse=True)
+
+    def test_hybrid_search_empty_bm25_results(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search when BM25 returns no results."""
+        mock_bm25_store.search.return_value = []
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Should still return vector results
+        assert len(results) > 0
+        # All results should be from vector search
+        result_ids = {r.chunk.id for r in results}
+        assert "chunk-1" in result_ids or "chunk-2" in result_ids
+
+    def test_hybrid_search_empty_vector_results(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        mock_bm25_store: MagicMock,
+        hybrid_config: RetrievalConfig,
+    ) -> None:
+        """Test hybrid search when vector search returns no results."""
+        mock_vector_store.search.return_value = []
+        retriever = Retriever(
+            mock_embedder,
+            mock_vector_store,
+            hybrid_config,
+            bm25_store=mock_bm25_store,
+        )
+
+        results = retriever.search("שאלה")
+
+        # Should still return BM25 results
+        assert len(results) > 0
+        # All results should be from BM25 search
+        result_ids = {r.chunk.id for r in results}
+        assert "chunk-3" in result_ids or "chunk-4" in result_ids

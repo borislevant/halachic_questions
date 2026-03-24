@@ -40,6 +40,9 @@ class RetrievalConfig(BaseModel):
     initial_candidates: int = 20
     min_similarity: float = 0.3
     use_reranker: bool = False
+    use_hybrid: bool = True
+    bm25_weight: float = 0.3
+    vector_weight: float = 0.7
 
 
 class GenerationConfig(BaseModel):
@@ -58,6 +61,7 @@ class StorageConfig(BaseModel):
     sqlite_path: str = "./db/app.db"
     books_dir: str = "./data/books"
     processed_dir: str = "./data/processed"
+    bm25_dir: str = "./db/bm25"
 
 
 class AuthConfig(BaseModel):

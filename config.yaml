@@ -25,6 +25,9 @@ retrieval:
   initial_candidates: 20
   min_similarity: 0.3
   use_reranker: true
+  use_hybrid: true
+  bm25_weight: 0.3
+  vector_weight: 0.7
 
 generation:
   provider: "anthropic"
@@ -37,3 +40,4 @@ storage:
   sqlite_path: "./db/app.db"
   books_dir: "./data/books"
   processed_dir: "./data/processed"
+  bm25_dir: "./db/bm25"

@@ -16,6 +16,7 @@ from src.generation.summarizer import Summarizer
 from src.ingestion.chunker import HalachicChunker
 from src.ingestion.parser import BookParser
 from src.ingestion.pipeline import IngestionPipeline
+from src.retrieval.bm25_store import BM25Store
 from src.retrieval.reranker import Reranker
 from src.retrieval.retriever import Retriever
 from src.retrieval.vector_store import VectorStore
@@ -47,6 +48,17 @@ def load_services() -> dict:
     )
     vector_store.initialize()
 
+    # BM25 store — shared for hybrid retrieval
+    bm25_store = None
+    if config.retrieval.use_hybrid:
+        logger.info("Hybrid retrieval enabled, initializing BM25 store")
+        bm25_store = BM25Store(bm25_dir=config.storage.bm25_dir)
+        # Try to load existing index
+        if bm25_store.load_index():
+            logger.info("BM25 index loaded successfully (%d chunks)", bm25_store.chunk_count)
+        else:
+            logger.warning("No BM25 index found. Will be built during ingestion.")
+
     # Initialize reranker if enabled
     reranker = None
     if config.retrieval.use_reranker:
@@ -57,6 +69,7 @@ def load_services() -> dict:
         embedder=embedder,
         vector_store=vector_store,
         config=config.retrieval,
+        bm25_store=bm25_store,
         reranker=reranker,
     )
 
@@ -74,6 +87,7 @@ def load_services() -> dict:
         chunker=HalachicChunker(config.chunking),
         embedder=embedder,
         vector_store=vector_store,
+        bm25_store=bm25_store,
     )
 
     logger.info("Application services ready")

@@ -1,0 +1,947 @@
+{
+  "metadata": {
+    "timestamp": "2026-04-22T15:46:08.061748",
+    "num_questions": 11,
+    "num_configs": 5,
+    "configurations": [
+      {
+        "name": "vector_only",
+        "use_hybrid": false,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_bm25",
+        "use_hybrid": true,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_bm25_reranker",
+        "use_hybrid": true,
+        "use_reranker": true,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_only_top10",
+        "use_hybrid": false,
+        "use_reranker": false,
+        "top_k": 10,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "aggressive_bm25",
+        "use_hybrid": true,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.5,
+        "vector_weight": 0.5
+      }
+    ]
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מהו ה-Registry ומה תפקידו במערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "מה ההבדל בין Process ל-Driver?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין Process ל-Driver?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין Process ל-Driver?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין Process ל-Driver?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין Process ל-Driver?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה ההבדל בין Process ל-Driver?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "הסבר מהו Real Mode ומתי נעשה בו שימוש",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 4,
+      "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מהי שפת מכונה וכיצד היא קשורה למעבד?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מהם אזורי הזיכרון השונים של תוכנה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מהם התפקידים העיקריים של מערכת ההפעלה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 9,
+      "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 10,
+      "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 11,
+      "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מדוע Driverים יכולים ליצור פרצות אבטחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Results Directory
+
+כאן נשמרים קבצי התוצאות וההערכות.
+
+קבצים שנוצרים אוטומטית:
+- `comparison_results_YYYYMMDD_HHMMSS.json` - תוצאות הרצה
+- `comparison_results_YYYYMMDD_HHMMSS_ratings.json` - דירוגים ידניים

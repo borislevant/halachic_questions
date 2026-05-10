@@ -246,6 +246,21 @@ def list_books(db_path: str | Path, user_id: str | None = None) -> list[Book]:
         conn.close()
 
 
+def get_all_books(db_path: str | Path) -> list[Book]:
+    """Retrieve all books regardless of ownership.
+
+    This helper exists for internal maintenance jobs (e.g. BM25 index rebuild)
+    that need a complete view of the catalog.
+
+    Args:
+        db_path: Path to the SQLite database file.
+
+    Returns:
+        List of all Book instances.
+    """
+    return list_books(db_path, user_id=None)
+
+
 def delete_book(db_path: str | Path, book_id: str) -> bool:
     """Delete a book record.
 

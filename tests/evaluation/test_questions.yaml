@@ -1,0 +1,41 @@
+# Test Questions for Evaluation
+# כל שאלה תורץ עם תצורות שונות ותקבל דירוג ידני
+# פורמט: id (ייחודי) ו-question (טקסט השאלה)
+
+questions:
+  - id: 1
+    question: "מהו ה-Registry ומה תפקידו במערכת ההפעלה?"
+
+  - id: 2
+    question: "מה ההבדל בין Process ל-Driver?"
+
+  - id: 3
+    question: "הסבר מהו Real Mode ומתי נעשה בו שימוש"
+
+  - id: 4
+    question: "מהם מעגלי ההרשאה (Protection Rings) ב-Protected Mode?"
+
+  - id: 5
+    question: "מהי שפת מכונה וכיצד היא קשורה למעבד?"
+
+  - id: 6
+    question: "מהם אזורי הזיכרון השונים של תוכנה?"
+
+  - id: 7
+    question: "מה ההבדל בין מעבד 32 ביט למעבד 64 ביט?"
+
+  - id: 8
+    question: "מהם התפקידים העיקריים של מערכת ההפעלה?"
+
+  - id: 9
+    question: "כיצד ניתן למצוא Process שמחזיק קובץ פתוח?"
+
+  - id: 10
+    question: "מה ההבדל בין משתנה גלובלי למשתנה מקומי במבנה הזיכרון?"
+
+  - id: 11
+    question: "מדוע Driverים יכולים ליצור פרצות אבטחה?"
+
+# הוסף שאלות נוספות כאן:
+# - id: 12
+#   question: "השאלה שלך?"

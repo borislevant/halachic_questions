@@ -1,0 +1,720 @@
+{
+  "metadata": {
+    "timestamp": "2026-04-22T13:07:34.551335",
+    "num_questions": 8,
+    "num_configs": 5,
+    "configurations": [
+      {
+        "name": "vector_only",
+        "use_hybrid": false,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_bm25",
+        "use_hybrid": true,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_bm25_reranker",
+        "use_hybrid": true,
+        "use_reranker": true,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "vector_only_top10",
+        "use_hybrid": false,
+        "use_reranker": false,
+        "top_k": 10,
+        "initial_candidates": 20,
+        "bm25_weight": 0.3,
+        "vector_weight": 0.7
+      },
+      {
+        "name": "aggressive_bm25",
+        "use_hybrid": true,
+        "use_reranker": false,
+        "top_k": 5,
+        "initial_candidates": 20,
+        "bm25_weight": 0.5,
+        "vector_weight": 0.5
+      }
+    ]
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "question": "מה הדין של אכילת לחם בערב פסח?",
+      "category": "פסח",
+      "difficulty": "easy",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אכילת לחם בערב פסח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אכילת לחם בערב פסח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אכילת לחם בערב פסח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אכילת לחם בערב פסח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה הדין של אכילת לחם בערב פסח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 2,
+      "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+      "category": "חנוכה",
+      "difficulty": "easy",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "האם מותר להדליק נר חנוכה בשמן זית?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 3,
+      "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+      "category": "תפילה",
+      "difficulty": "medium",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה הדין של אדם ששכח להתפלל מנחה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 4,
+      "question": "האם אישה חייבת בקידוש?",
+      "category": "שבת",
+      "difficulty": "medium",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם אישה חייבת בקידוש?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם אישה חייבת בקידוש?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם אישה חייבת בקידוש?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם אישה חייבת בקידוש?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "האם אישה חייבת בקידוש?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 5,
+      "question": "האם מותר לשמוע קידוש מהקלטה?",
+      "category": "שבת",
+      "difficulty": "hard",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לשמוע קידוש מהקלטה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לשמוע קידוש מהקלטה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לשמוע קידוש מהקלטה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לשמוע קידוש מהקלטה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "האם מותר לשמוע קידוש מהקלטה?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 6,
+      "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+      "category": "כללי",
+      "difficulty": "hard",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מה עדיף - לקיים מצוה בידים או על ידי שליח?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 7,
+      "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+      "category": "ברכות",
+      "difficulty": "easy",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "האם מותר לומר שהכל נהיה בדברו על לחם?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    },
+    {
+      "question_id": 8,
+      "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+      "category": "צדקה",
+      "difficulty": "medium",
+      "variants": [
+        {
+          "config": {
+            "name": "vector_only",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_bm25_reranker",
+            "use_hybrid": true,
+            "use_reranker": true,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "vector_only_top10",
+            "use_hybrid": false,
+            "use_reranker": false,
+            "top_k": 10,
+            "initial_candidates": 20,
+            "bm25_weight": 0.3,
+            "vector_weight": 0.7
+          },
+          "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        },
+        {
+          "config": {
+            "name": "aggressive_bm25",
+            "use_hybrid": true,
+            "use_reranker": false,
+            "top_k": 5,
+            "initial_candidates": 20,
+            "bm25_weight": 0.5,
+            "vector_weight": 0.5
+          },
+          "question": "מתי צריך לתת צדקה - בבוקר או בערב?",
+          "sources": [],
+          "answer": "לא נמצאו מקורות רלוונטיים לשאלה זו.",
+          "num_sources": 0
+        }
+      ]
+    }
+  ]
+}

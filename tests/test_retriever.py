@@ -335,6 +335,138 @@ class TestRetrieverScoreFiltering:
         assert len(results) == 3
 
 
+class TestRetrieverDeduplication:
+    """Test deduplication of logically identical sources."""
+
+    def test_deduplicates_same_book_title_and_section_path(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        config: RetrievalConfig,
+    ) -> None:
+        """Same logical section should appear only once even across duplicate ingests."""
+        mock_vector_store.search.return_value = [
+            {
+                "id": "chunk-1",
+                "score": 0.95,
+                "text": "קטע ראשון מאותו סעיף",
+                "metadata": {
+                    "book_id": "book-copy-1",
+                    "book_title": "ספר א",
+                    "book_author": "רבי א",
+                    "section_path": "סימן א",
+                    "section_type": "siman",
+                    "language": "he",
+                    "char_start": 0,
+                    "char_end": 100,
+                    "token_count": 20,
+                    "chunk_index": 0,
+                    "total_chunks_in_section": 2,
+                },
+            },
+            {
+                "id": "chunk-2",
+                "score": 0.90,
+                "text": "קטע שני מאותו סעיף אבל מאינג'סט אחר",
+                "metadata": {
+                    "book_id": "book-copy-2",
+                    "book_title": "ספר א",
+                    "book_author": "רבי א",
+                    "section_path": "סימן א",
+                    "section_type": "siman",
+                    "language": "he",
+                    "char_start": 100,
+                    "char_end": 200,
+                    "token_count": 22,
+                    "chunk_index": 1,
+                    "total_chunks_in_section": 2,
+                },
+            },
+            {
+                "id": "chunk-3",
+                "score": 0.85,
+                "text": "סעיף אחר לגמרי",
+                "metadata": {
+                    "book_id": "book-copy-1",
+                    "book_title": "ספר א",
+                    "book_author": "רבי א",
+                    "section_path": "סימן ב",
+                    "section_type": "siman",
+                    "language": "he",
+                    "char_start": 0,
+                    "char_end": 100,
+                    "token_count": 18,
+                    "chunk_index": 2,
+                    "total_chunks_in_section": 2,
+                },
+            },
+        ]
+
+        retriever = Retriever(mock_embedder, mock_vector_store, config)
+        results = retriever.search("שאלה", include_context=False)
+
+        assert len(results) == 2
+        assert [(r.chunk.book_title, r.chunk.section_path) for r in results] == [
+            ("ספר א", "סימן א"),
+            ("ספר א", "סימן ב"),
+        ]
+
+    def test_does_not_merge_same_section_path_across_different_books(
+        self,
+        mock_embedder: MagicMock,
+        mock_vector_store: MagicMock,
+        config: RetrievalConfig,
+    ) -> None:
+        """Common section labels like 'ד' should remain when books differ."""
+        mock_vector_store.search.return_value = [
+            {
+                "id": "chunk-1",
+                "score": 0.95,
+                "text": "טקסט מספר א",
+                "metadata": {
+                    "book_id": "book-1",
+                    "book_title": "ספר א",
+                    "book_author": "רבי א",
+                    "section_path": "ד",
+                    "section_type": "siman",
+                    "language": "he",
+                    "char_start": 0,
+                    "char_end": 100,
+                    "token_count": 20,
+                    "chunk_index": 0,
+                    "total_chunks_in_section": 1,
+                },
+            },
+            {
+                "id": "chunk-2",
+                "score": 0.90,
+                "text": "טקסט מספר ב",
+                "metadata": {
+                    "book_id": "book-2",
+                    "book_title": "ספר ב",
+                    "book_author": "רבי ב",
+                    "section_path": "ד",
+                    "section_type": "siman",
+                    "language": "he",
+                    "char_start": 0,
+                    "char_end": 100,
+                    "token_count": 20,
+                    "chunk_index": 0,
+                    "total_chunks_in_section": 1,
+                },
+            },
+        ]
+
+        retriever = Retriever(mock_embedder, mock_vector_store, config)
+        results = retriever.search("שאלה", include_context=False)
+
+        assert len(results) == 2
+        assert {(r.chunk.book_title, r.chunk.section_path) for r in results} == {
+            ("ספר א", "ד"),
+            ("ספר ב", "ד"),
+        }
+
+
 class TestRetrieverTopKControl:
     """Test top_k parameter controls result count."""
 

@@ -47,6 +47,13 @@ class Retriever:
         self._bm25_store = bm25_store
         self._reranker = reranker
 
+    @staticmethod
+    def _normalize_dedup_value(value: Any) -> str:
+        """Normalize metadata values used for deduplication."""
+        if value is None:
+            return ""
+        return " ".join(str(value).split()).casefold()
+
     def search(
         self,
         question: str,
@@ -149,6 +156,53 @@ class Retriever:
                     final_min_similarity,
                 )
                 return []
+
+            # Step 4b: Deduplicate by text, position and logical source section.
+            # Keep the highest-scoring copy (results are already score-sorted).
+            # We intentionally use normalized book title + section path in addition
+            # to book_id because duplicate ingestions can create distinct IDs for
+            # the same logical source, which would otherwise leak duplicates.
+            seen_texts: set[str] = set()
+            seen_positions: set[tuple[str, int]] = set()
+            seen_sections: set[tuple[str, str]] = set()
+            deduped_results: list[dict] = []
+            for result in filtered_results:
+                meta = result["metadata"]
+                normalized_book_id = self._normalize_dedup_value(meta.get("book_id", ""))
+                normalized_book_title = self._normalize_dedup_value(
+                    meta.get("book_title", "")
+                )
+                normalized_section_path = self._normalize_dedup_value(
+                    meta.get("section_path", "")
+                )
+                position_key = (
+                    normalized_book_id or normalized_book_title,
+                    int(meta.get("chunk_index", -1)),
+                )
+                section_key = (normalized_book_title, normalized_section_path)
+                text_key = self._normalize_dedup_value(result.get("text", ""))
+                if (
+                    position_key not in seen_positions
+                    and text_key not in seen_texts
+                    and (
+                        not normalized_book_title
+                        or not normalized_section_path
+                        or section_key not in seen_sections
+                    )
+                ):
+                    seen_positions.add(position_key)
+                    seen_texts.add(text_key)
+                    if normalized_book_title and normalized_section_path:
+                        seen_sections.add(section_key)
+                    deduped_results.append(result)
+            if len(deduped_results) < len(filtered_results):
+                logger.warning(
+                    "Deduplicated %d → %d results (duplicate chunks detected; "
+                    "consider re-ingesting affected books)",
+                    len(filtered_results),
+                    len(deduped_results),
+                )
+            filtered_results = deduped_results[:final_top_k]
 
             logger.info(
                 "Found %d results (filtered from %d)",
